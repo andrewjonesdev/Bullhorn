@@ -55,7 +55,7 @@ public class CloudinaryConfig {
                 .imageTag(url[url.length-1])).split("'");
 
         return superUrl[1];
-    }
+    } 
 
     public String createUrlSuperPost(String name, int height, String action, int border){
         String[] url = name.split("/");
