@@ -1,18 +1,24 @@
 package byaj.controllers;
 
+import byaj.configs.CloudinaryConfig;
 import byaj.models.*;
 import byaj.repositories.*;
 import byaj.validators.UserValidator;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by student on 7/10/17.
@@ -43,6 +49,9 @@ public class HomeController {
 
     @Autowired
     private PostBuilderRepository postBuilderRepository;
+
+    @Autowired
+    private CloudinaryConfig cloudc;
 
     @RequestMapping("/")
     public String home(Model model){
@@ -107,11 +116,21 @@ public class HomeController {
     }
 
     @PostMapping(path = "/post")
-    public String processPost(@Valid Post post, BindingResult bindingResult, Principal principal) {
+    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("file") MultipartFile file, Principal principal) {
         if (bindingResult.hasErrors()) {
             System.out.println("post");
             return "redirect:/job";
         }
+        if(!file.isEmpty()){
+            try {
+                Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+                post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(),100, "scale", 2));
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        }
+
         post.setPostUser(userRepository.findByUsername(principal.getName()).getId());
         post.setPostAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         postRepository.save(post);

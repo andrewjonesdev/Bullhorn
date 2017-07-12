@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Created by student on 6/27/17.
@@ -19,13 +20,20 @@ public class Post {
     //@Min(1)
     private int postID;
 
+    @ManyToMany(mappedBy = "likes",fetch = FetchType.LAZY)
+    private Set<User> users;
+
     private String postName;
 
     private String postAuthor;
     @Column(columnDefinition="integer default -1")
     private int postUser;
 
+    @Column(columnDefinition="varchar default http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png")
+    private String picUrl;
+
     private Date postDate=new Date();
+
 
 
     public int getPostID() {
@@ -42,7 +50,15 @@ public class Post {
     public void setPostName (String postName) {
         this.postName = postName;
     }
-    
+
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl (String picUrl) {
+        this.picUrl = picUrl;
+    }
+
     public String getPostAuthor() {
         return postAuthor;
     }
@@ -63,9 +79,16 @@ public class Post {
         return postDate;
     }
 
-
     public String getFormatDate(){
         SimpleDateFormat format = new SimpleDateFormat("EEEE MMMMM dd, yyyy hh:mm a zzzz", Locale.US);
         return format.format(postDate);
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

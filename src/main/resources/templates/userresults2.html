@@ -18,6 +18,7 @@
 
     <table class="table table-striped">
         <tr>
+            <th>Picture</th>
             <th>Username</th>
             <th>Date Registered</th>
             <th>View Posts</th>
@@ -25,6 +26,7 @@
 
         </tr>
         <tr th:each="row : ${users}">
+            <td><img th:src="${row.picUrl}" /></td>
             <td th:text="${row.username}"></td>
             <td th:text="${row.getFormatDate()}"></td>
             <td><form class="form-inline" th:action="@{/generate/posts}" th:object="${profileBuilder}" method="post">

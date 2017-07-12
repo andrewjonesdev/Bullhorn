@@ -49,10 +49,20 @@ public class User {
     @Column(name = "user_date")
     private Date userDate=new Date();
 
+    @Column(name="picture_url", columnDefinition="varchar default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
+    private String picUrl;
+
+    @Column(name = "picture_date")
+    private Date picDate=new Date();
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = @JoinColumn(name = "user_likes"),inverseJoinColumns = @JoinColumn(name = "posts_liked"))
+    private Collection<Post> likes;
 
     @ManyToMany//(fetch = FetchType.EAGER)
     @JoinTable(name="follow_status", joinColumns = @JoinColumn(name = "following_id"),inverseJoinColumns = @JoinColumn(name = "followed_id"))
@@ -152,12 +162,28 @@ public class User {
         this.username = username;
     }
 
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl (String picUrl) {
+        this.picUrl = picUrl;
+    }
+
     public Collection<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(Collection<Role> roles) {
         this.roles = roles;
+    }
+
+    public Collection<Post> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Collection<Post> likes) {
+        this.likes = likes;
     }
 
     public Collection<User> getFollowing() {
@@ -192,5 +218,14 @@ public class User {
     public String getFormatDate(){
         SimpleDateFormat format = new SimpleDateFormat("EEEE MMMMM dd, yyyy hh:mm a zzzz", Locale.US);
         return format.format(userDate);
+    }
+
+    public Date getPicDate() {
+        return picDate;
+    }
+
+    public String getFormatPicDate(){
+        SimpleDateFormat format = new SimpleDateFormat("EEEE MMMMM dd, yyyy hh:mm a zzzz", Locale.US);
+        return format.format(picDate);
     }
 }

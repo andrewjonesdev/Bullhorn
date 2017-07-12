@@ -1,6 +1,8 @@
 package byaj.services;
 
+import byaj.models.Post;
 import byaj.models.User;
+import byaj.repositories.PostRepository;
 import byaj.repositories.RoleRepository;
 import byaj.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -19,6 +22,9 @@ public class UserService {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    PostRepository postRepository;
 
     @Autowired
     public UserService(UserRepository userRepository) {
@@ -90,5 +96,40 @@ public class UserService {
             }
         userRepository.save(otherUser);
         userRepository.save(thisUser);
+    }
+
+    public void likePost(User user, Post post){
+        //this user is likedPosts other user
+        Collection<Post> likedPosts=user.getLikes();
+        if(!likedPosts.contains(post)) {
+            likedPosts.add(post);
+            user.setLikes(likedPosts);
+        }
+        //other user is being likers by this user
+        Set<User> likers=post.getUsers();
+        if(likers.contains(user)) {
+            likers.add(user);
+            post.setUsers(likers);
+        }
+        postRepository.save(post);
+        userRepository.save(user);
+    }
+
+    public void unlikePost(User user, Post post){
+        Set<User> unlike;
+
+        if( post.getUsers().contains(user)){
+            unlike=post.getUsers();
+            unlike.remove(user);
+            post.setUsers(unlike);
+        }
+        Collection<Post> dislikers;
+        if (user.getLikes().contains(post)){
+            dislikers=user.getLikes();
+            dislikers.remove(post);
+            user.setLikes(dislikers);
+        }
+        userRepository.save(user);
+        postRepository.save(post);
     }
 }
