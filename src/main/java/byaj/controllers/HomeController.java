@@ -122,11 +122,8 @@ public class HomeController {
             System.out.println("post");
             return "redirect:/job";
         }
-
-            if (file.isEmpty()) {
-                post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
-
-            } else {
+        try {
+            if (file!=null) {
                 try {
                     Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
                     post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(), 100, "scale", 2));
@@ -134,9 +131,14 @@ public class HomeController {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
             }
-
-
+        }
+        catch(Exception e){
+            System.out.println("null file");
+            post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
+        }
 
         post.setPostUser(userRepository.findByUsername(principal.getName()).getId());
         post.setPostAuthor(userRepository.findByUsername(principal.getName()).getUsername());
