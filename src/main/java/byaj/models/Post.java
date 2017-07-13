@@ -1,6 +1,8 @@
 package byaj.models;
 
+import byaj.repositories.UserRepository;
 import org.hibernate.annotations.Type;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -98,4 +100,5 @@ public class Post {
     public void setUsers(Collection<User> users) {
         this.users = users;
     }
+
 }

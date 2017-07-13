@@ -236,4 +236,22 @@ public class User {
         SimpleDateFormat format = new SimpleDateFormat("EEEE MMMMM dd, yyyy hh:mm a zzzz", Locale.US);
         return format.format(picDate);
     }
+
+    public boolean followedContains(User user){
+        if(followed.contains(user)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean followingContains(User user){
+        if(following.contains(user)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -61,13 +62,23 @@ public class HomeController {
     private CloudinaryConfig cloudc;
 
     @RequestMapping("/")
-    public String home(Model model){
+    public String home(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("post", new Post());
         model.addAttribute("follow", new Follow());
         model.addAttribute("like", new Like());
         model.addAttribute("posts", postRepository.findAllByOrderByPostDateDesc());
-        //model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        Collection<User> userCollection;
+        for(int count = 0; count<postRepository.findAllByOrderByPostDateDesc().size(); count++){
+            userCollection.add(userRepository.findByUsername(postRepository.findAllByOrderByPostDateDesc().get(count).getPostAuthor()));
+        }
+        model.addAttribute("userRepo", );
+        if(principal == null) {
+            return "postresults2";
+        }
+        else{
+            model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        }
         return "postresults2";
     }
 

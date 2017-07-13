@@ -67,13 +67,13 @@ public class UserService {
     public void followUser(User otherUser, User thisUser){
         //this user is following other user
         Collection<User> following=thisUser.getFollowing();
-        if(!following.contains(otherUser)) {
+        if(!thisUser.followingContains(otherUser)) {
             following.add(otherUser);
             thisUser.setFollowing(following);
         }
         //other user is being followed by this user
         Collection<User> followed=otherUser.getFollowed();
-        if(followed.contains(thisUser)) {
+        if(otherUser.followedContains(thisUser)) {
             followed.add(thisUser);
             otherUser.setFollowed(followed);
         }
@@ -83,13 +83,13 @@ public class UserService {
     public void unfollowUser(User otherUser, User thisUser){
         Collection<User> unfollowing;
 
-            if( thisUser.getFollowing().contains(otherUser)){
+            if( thisUser.followingContains(otherUser)){
                 unfollowing=thisUser.getFollowing();
                 unfollowing.remove(otherUser);
                 thisUser.setFollowing(unfollowing);
             }
         Collection<User> unfollowed;
-            if (otherUser.getFollowed().contains(thisUser)){
+            if (otherUser.followedContains(thisUser)){
                 unfollowed=otherUser.getFollowed();
                 unfollowed.remove(thisUser);
                 otherUser.setFollowed(unfollowed);
