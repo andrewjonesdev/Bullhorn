@@ -22,6 +22,9 @@ public class Follow {
     private String followValue;
 
     private String followType;
+
+    private String followAuthor;
+    
     @Column(columnDefinition="integer default -1")
     private int followUser;
 
@@ -51,6 +54,13 @@ public class Follow {
         this.followType = followType;
     }
 
+    public String getFollowAuthor() {
+        return followAuthor;
+    }
+
+    public void setFollowAuthor (String followAuthor) {
+        this.followAuthor = followAuthor;
+    }
 
     public int getFollowUser() {
         return followUser;

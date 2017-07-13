@@ -21,6 +21,8 @@ public class PostBuilder {
 
     private String postBuilderValue;
 
+    private String postBuilderAuthor;
+    
     @Column(columnDefinition="integer default -1")
     private int postBuilderUser;
 
@@ -42,6 +44,14 @@ public class PostBuilder {
         this.postBuilderValue = postBuilderValue;
     }
 
+    public String getPostBuilderAuthor() {
+        return postBuilderAuthor;
+    }
+
+    public void setPostBuilderAuthor (String postBuilderAuthor) {
+        this.postBuilderAuthor = postBuilderAuthor;
+    }
+    
     public int getPostBuilderUser() {
         return postBuilderUser;
     }

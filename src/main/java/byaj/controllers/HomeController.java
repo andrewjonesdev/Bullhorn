@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -43,6 +44,12 @@ public class HomeController {
 
     @Autowired
     private SearchRepository searchRepository;
+    
+    @Autowired
+    private FollowRepository followRepository;
+    
+    @Autowired
+    private LikeRepository likeRepository;
 
     @Autowired
     private ProfileBuilderRepository profileBuilderRepository;
@@ -58,7 +65,9 @@ public class HomeController {
         model.addAttribute("search", new Search());
         model.addAttribute("post", new Post());
         model.addAttribute("follow", new Follow());
+        model.addAttribute("like", new Like());
         model.addAttribute("posts", postRepository.findAllByOrderByPostDateDesc());
+        //model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         return "postresults2";
     }
 
@@ -107,25 +116,95 @@ public class HomeController {
         return "login2";
     }
 
+    @GetMapping("/upload")
+    public String uploadForm(Model model){
+        model.addAttribute("search", new Search());
+        return "upload2";
+    }
+    @PostMapping("/upload")
+    public String singleImageUpload(@RequestParam("file") MultipartFile file, @RequestParam("text") String text, @RequestParam("fontSize") int fontSize, @RequestParam("scale") int scale, @RequestParam("x") int x, @RequestParam("y") int y, RedirectAttributes redirectAttributes, Model model){
+        model.addAttribute("search", new Search());
+        if (file.isEmpty()){
+            model.addAttribute("message","Please select a file to upload");
+            return "upload2";
+        }
+        try {
+            Map uploadResult =  cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+
+            System.out.println(cloudc.createUrl(file.getOriginalFilename(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia"));
+            System.out.println(uploadResult.get("width").toString());
+            System.out.println(uploadResult.get("height").toString());
+            System.out.println(cloudc.createUrlNoFormat(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2));
+            System.out.println(cloudc.createUrlSuper(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2));
+            System.out.println(cloudc.createUrlSuperMeme(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2, text, fontSize,scale, x, y));
+            model.addAttribute("message", "You successfully uploaded '" + file.getOriginalFilename() + "'");
+            model.addAttribute("imageurl1", uploadResult.get("url"));
+            //    model.addAttribute("imageurl", cloudc.createUrlNoFormat(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2));
+            //model.addAttribute("imageurl", cloudc.createUrl(file.getOriginalFilename(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia"));
+        /*master*/    model.addAttribute("imageurl2", cloudc.createUrlSuper(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2));
+        /*40x40 sepia cropped*/ model.addAttribute("imageurl3", cloudc.createUrlSuper(uploadResult.get("url").toString(), 40, 40, "pad", "sepia"));
+        /*40x40 sepia*/ model.addAttribute("imageurl4", cloudc.createUrlSuper(uploadResult.get("url").toString(), 40, 40, "sepia"));
+        /*fixed height width auto*/ model.addAttribute("imageurl5", cloudc.createUrlSuper(uploadResult.get("url").toString(), 100));
+        /*master*/    model.addAttribute("imageurl6", cloudc.createUrlSuperMeme(uploadResult.get("url").toString(), Integer.parseInt(uploadResult.get("width").toString()), Integer.parseInt(uploadResult.get("height").toString()), "fill", "sepia", 2, text, fontSize, scale, x, y));
+
+        } catch (IOException e){
+            e.printStackTrace();
+            model.addAttribute("message", "Sorry I can't upload that!");
+        }
+        return "upload2";
+    }
+
     @GetMapping("/post")
-    public String newPost(Model model, Principal principal) {
+    public String newPost(Model model, Principal principal, RedirectAttributes redirectAttributes) {
         model.addAttribute("search", new Search());
         model.addAttribute("post", new Post());
         model.addAttribute("posts", postRepository.findAllByPostUserOrderByPostDateDesc(userRepository.findByUsername(principal.getName()).getId()));
         model.addAttribute("follow", new Follow());
+        model.addAttribute("like", new Like());
+        model.addAttribute("user", userRepository.findByUsername(principal.getName()));
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         return "post2";
     }
-
+    @PostMapping("/profile/picture")
+    public String singleImageUpload(@RequestParam("fileProfile") MultipartFile fileProfile, Model model, Principal principal, RedirectAttributes redirectAttributes){
+        model.addAttribute("search", new Search());
+        if (fileProfile.isEmpty()){
+            model.addAttribute("message","Please select a file to upload");
+            model.addAttribute("post", new Post());
+            model.addAttribute("posts", postRepository.findAllByPostUserOrderByPostDateDesc(userRepository.findByUsername(principal.getName()).getId()));
+            model.addAttribute("follow", new Follow());
+            model.addAttribute("like", new Like());
+            model.addAttribute("user", userRepository.findByUsername(principal.getName()));
+            model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+            return "post2";
+        }
+        try {
+            Map uploadResult = cloudc.upload(fileProfile.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+            userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlSuperProfile(uploadResult.get("url").toString(), 100, "scale", 2));
+            userRepository.findByUsername(principal.getName()).setPicDate();
+            userRepository.save(userRepository.findByUsername(principal.getName()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Sorry I can't upload that!");
+        }
+        model.addAttribute("post", new Post());
+        model.addAttribute("posts", postRepository.findAllByPostUserOrderByPostDateDesc(userRepository.findByUsername(principal.getName()).getId()));
+        model.addAttribute("follow", new Follow());
+        model.addAttribute("like", new Like());
+        model.addAttribute("user", userRepository.findByUsername(principal.getName()));
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        return "post2";
+}
     @PostMapping(path = "/post")
-    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam(value = "file", required = false) MultipartFile file, Principal principal) {
+    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("filePost") MultipartFile filePost, Principal principal) {
         if (bindingResult.hasErrors()) {
             System.out.println("post");
             return "redirect:/job";
         }
         try {
-            if (file!=null) {
+            if (!filePost.isEmpty()) {
                 try {
-                    Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+                    Map uploadResult = cloudc.upload(filePost.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
                     post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(), 100, "scale", 2));
 
                 } catch (IOException e) {
@@ -156,11 +235,14 @@ public class HomeController {
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
         model.addAttribute("postBuilder", new PostBuilder());
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         search.setSearchUser(userRepository.findByUsername(principal.getName()).getId());
+        search.setSearchAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         searchRepository.save(search);
         if(search.getSearchType().toLowerCase().equals("username")){
             model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()));
             model.addAttribute("follow", new Follow());
+            model.addAttribute("like", new Like());
             return "postresults2";
         }
        /* if(search.getSearchType().toLowerCase().equals("company")){
@@ -203,6 +285,11 @@ public class HomeController {
         if(follow.getFollowType().toLowerCase().equals("unfollow")){
             userService.unfollowUser(userRepository.findByUsername(follow.getFollowValue()), userRepository.findByUsername(principal.getName()));
         }
+        follow.setFollowUser(userRepository.findByUsername(principal.getName()).getId());
+        follow.setFollowAuthor(userRepository.findByUsername(principal.getName()).getUsername());
+        followRepository.save(follow);
+        System.out.println(userRepository.findByUsername(principal.getName()).getUsername());
+        System.out.println(userRepository.findByUsername(follow.getFollowValue()).getUsername());
         return "redirect:/";
     }
 
@@ -212,6 +299,7 @@ public class HomeController {
     public String viewFollowing(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findByUsername(principal.getName()).getFollowing());
         model.addAttribute("follow", new Follow());
         return "userresults2";
@@ -220,27 +308,53 @@ public class HomeController {
     public String viewFollowers(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findByUsername(principal.getName()).getFollowed());
         model.addAttribute("follow", new Follow());
         return "userresults2";
     }
+
+    @PostMapping("/like")
+    public String changeLikeStatus(@Valid Like like, BindingResult bindingResult, Principal principal, Model model){
+        if(bindingResult.hasErrors()){
+            return "redirect:/";
+        }
+        if(like.getLikeType().toLowerCase().equals("like")){
+            userService.likePost(postRepository.findByPostID(Integer.parseInt(like.getLikeValue())), userRepository.findByUsername(principal.getName()));
+        }
+        if(like.getLikeType().toLowerCase().equals("unlike")){
+            userService.unlikePost(postRepository.findByPostID(Integer.parseInt(like.getLikeValue())), userRepository.findByUsername(principal.getName()));
+        }
+        like.setLikeUser(userRepository.findByUsername(principal.getName()).getId());
+        like.setLikeAuthor(userRepository.findByUsername(principal.getName()).getUsername());
+        likeRepository.save(like);
+        return "redirect:/";
+    }
+    
     @GetMapping("/users")
     public String viewUsers(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findAllByOrderByUserDateDesc());
         model.addAttribute("follow", new Follow());
         return "userresults2";
     }
     @PostMapping("/generate/posts")
-    public String generatePosts(@Valid ProfileBuilder profileBuilder, BindingResult bindingResult, Model model){
+    public String generatePosts(@Valid ProfileBuilder profileBuilder, BindingResult bindingResult, Model model, Principal principal){
         if(bindingResult.hasErrors()){
             return "redirect:/";
         }
         model.addAttribute("search", new Search());
         model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(profileBuilder.getProfileBuilderValue()));
         model.addAttribute("follow", new Follow());
-        return "postresults2";
+        model.addAttribute("like", new Like());
+        model.addAttribute("user", userRepository.findByUsername(profileBuilder.getProfileBuilderValue()));
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        profileBuilder.setProfileBuilderUser(userRepository.findByUsername(principal.getName()).getId());
+        profileBuilder.setProfileBuilderAuthor(userRepository.findByUsername(principal.getName()).getUsername());
+        profileBuilderRepository.save(profileBuilder);
+        return "post2";
     }
 
 }

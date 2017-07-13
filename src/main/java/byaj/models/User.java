@@ -228,6 +228,10 @@ public class User {
         return picDate;
     }
 
+    public void setPicDate (){
+        this.picDate = new Date();
+    }
+
     public String getFormatPicDate(){
         SimpleDateFormat format = new SimpleDateFormat("EEEE MMMMM dd, yyyy hh:mm a zzzz", Locale.US);
         return format.format(picDate);

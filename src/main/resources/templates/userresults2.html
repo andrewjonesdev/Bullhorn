@@ -21,7 +21,7 @@
             <th>Picture</th>
             <th>Username</th>
             <th>Date Registered</th>
-            <th>View Posts</th>
+            <th>View Profile</th>
             <th>Friendship</th>
 
         </tr>
@@ -32,25 +32,26 @@
             <td><form class="form-inline" th:action="@{/generate/posts}" th:object="${profileBuilder}" method="post">
             <div class="hidden">
                 <label>
-                    <input type="text" name="blankText" id="blankText1"  th:value="${row.username}" th:field="*{profileBuilderValue}" aria-label="..."/>
+                    <input type="hidden" th:name="profileBuilderValue" th:id="profileBuilderValue"  th:value="${row.username}" aria-label="..."/>
                 </label>
             </div>
-            <button type="submit" class="btn btn-default">View Posts</button>
+            <button type="submit" class="btn btn-default">View Profile</button>
         </form></td>
             <td><form class="form-inline" th:action="@{/follow}" th:object="${follow}" method="post">
                 <div class="hidden">
                     <label>
-                        <input type="text" name="blankText" id="blankText2"  th:value="${row.username}" th:field="*{followValue}" aria-label="..."/>
+                        <input type="hidden" th:name="followValue" th:id="followValue"  th:value="${row.username}" aria-label="..."/>
                     </label>
                 </div>
                 <div class="radio">
-                    <label>
+                    <label th:unless="${row.followed.contains(row.followed, $userPrincipal)}">
+
                         <input type="radio" name="blankRadio" id="blankRadio1" value="follow" th:field="*{followType}" aria-label="..."/>
                         Follow
                     </label>
 
-                    <label>
-                        <input type="radio" name="blankRadio" id="blankRadio2" th:value="unfollow" th:field="*{followType}" aria-label="..."/>
+                    <label th:if="${row.followed.contains(row.followed, $userPrincipal)}">
+                        <input type="radio" name="blankRadio" id="blankRadio2" value="unfollow" th:field="*{followType}" aria-label="..."/>
                         Unfollow
                     </label>
 

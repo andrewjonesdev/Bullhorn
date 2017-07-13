@@ -30,6 +30,7 @@ public class Post {
     private String postName;
 
     private String postAuthor;
+
     @Column(columnDefinition="integer default -1")
     private int postUser;
 

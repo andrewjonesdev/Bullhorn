@@ -21,6 +21,8 @@ public class ProfileBuilder {
 
     private String profileBuilderValue;
 
+    private String profileBuilderAuthor;
+    
     @Column(columnDefinition="integer default -1")
     private int profileBuilderUser;
 
@@ -42,6 +44,14 @@ public class ProfileBuilder {
         this.profileBuilderValue = profileBuilderValue;
     }
 
+    public String getProfileBuilderAuthor() {
+        return profileBuilderAuthor;
+    }
+
+    public void setProfileBuilderAuthor (String profileBuilderAuthor) {
+        this.profileBuilderAuthor = profileBuilderAuthor;
+    }
+    
     public int getProfileBuilderUser() {
         return profileBuilderUser;
     }

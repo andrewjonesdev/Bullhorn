@@ -98,7 +98,7 @@ public class UserService {
         userRepository.save(thisUser);
     }
 
-    public void likePost(User user, Post post){
+    public void likePost(Post post, User user){
         //this user is likedPosts other user
         Collection<Post> likedPosts=user.getLikes();
         if(!likedPosts.contains(post)) {
@@ -115,7 +115,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void unlikePost(User user, Post post){
+    public void unlikePost(Post post, User user){
         Collection<User> unlike;
 
         if( post.getUsers().contains(user)){

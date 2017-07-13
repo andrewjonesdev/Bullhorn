@@ -38,7 +38,7 @@
                 <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/">Show Posts</a></li>
                 <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/following">View Following</a></li>
                 <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/followers">View Followers</a></li>
-                <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/users">Discover</a></li>
+                <li><a href="/users">Discover</a></li>
                 <li sec:authorize="isAnonymous()"><a href="/register">Register Today</a></li>
                 <li sec:authorize="isAnonymous()"><a href="/login">Login</a></li>
                 <li sec:authorize="isAuthenticated()"><a href="/logout">Logout</a></li>

@@ -14,9 +14,28 @@
 
 <div class="container">
     <br /><br /><br />
+    <br /><br /><br />
+    <div th:object="${user}">
+        <h1 th:text="${user.username}"></h1>
+        <h2 th:text="${user.fullName}"></h2>
+    <img th:src="${user.picUrl}" />
+    <hr />
+
+    <form th:if="${user.id} == ${userPrincipal.id}" th:action="@{/profile/picture}"  method="post" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label for="title">Change Profile Picture</label>
+            <input type="file" name="fileProfile" />
+        </div>
+        <button type="submit" class="btn btn-default">Change Profile Pic</button>
+    </form>
+        <div th:if="${message}">
+            <p th:text="${message}"/><br/><br/>
+        </div>
+    </div>
     <h4>Your Post</h4>
 
-    <form th:action="@{/post}" th:object="${post}" method="post">
+    <form th:if="${user.id} == ${userPrincipal.id}" th:action="@{/post}" th:object="${post}" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Post</label>
             <textarea type="text" class="form-control" id="title" placeholder="What do you want to say little birdie?"
@@ -24,7 +43,7 @@
         </div>
         <div class="form-group">
             <label for="title">Image</label>
-        <input type="file" name="file" />
+        <input type="file" name="filePost" />
         </div>
         <button type="submit" class="btn btn-default">Post</button>
     </form>
@@ -35,6 +54,8 @@
             <th>Post</th>
             <th>Author</th>
             <th>Date</th>
+            <th>Likes</th>
+            <th>Like Post</th>
 
         </tr>
         <tr th:each="row : ${posts}">
@@ -42,6 +63,32 @@
             <td th:text="${row.postName}"></td>
             <td th:text="${row.postAuthor}"></td>
             <td th:text="${row.getFormatDate()}"></td>
+            <td th:text="${row.users.size()}"></td>
+            <td><form class="form-inline" th:action="@{/like}" th:object="${like}" method="post">
+                <div class="text">
+                    <label>
+                        <input type="hidden" th:name="likeValue" th:id="likeValue"  th:value="${row.postID}" aria-label="..."/>
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="blankRadio" id="blankRadio1" value="like" th:field="*{likeType}" aria-label="..."/>
+                        Like
+                    </label>
+
+                    <label>
+                        <input type="radio" name="blankRadio" id="blankRadio2" value="unlike" th:field="*{likeType}" aria-label="..."/>
+                        Unlike
+                    </label>
+
+                    <!--<label>
+                        <input type="radio" name="blankRadio" id="blankRadio3" value="flag" th:field="*{followType}" aria-label="..."/>
+                        Flag
+                    </label>-->
+                </div>
+
+                <button type="submit" class="btn btn-default">Like/Unlike Post</button>
+            </form></td>
 
 
         </tr>

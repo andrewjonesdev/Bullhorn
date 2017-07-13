@@ -22,6 +22,9 @@ public class Search {
     private String searchValue;
 
     private String searchType;
+
+    private String searchAuthor;
+    
     @Column(columnDefinition="integer default -1")
     private int searchUser;
 
@@ -51,6 +54,13 @@ public class Search {
         this.searchType = searchType;
     }
 
+    public String getSearchAuthor() {
+        return searchAuthor;
+    }
+
+    public void setSearchAuthor (String searchAuthor) {
+        this.searchAuthor = searchAuthor;
+    }
 
     public int getSearchUser() {
         return searchUser;

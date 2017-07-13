@@ -30,6 +30,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .antMatchers("/bootstrap-3.3.7-dist/**").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/register").permitAll()
+                .antMatchers("/users").permitAll()
                 //.antMatchers("/books/edit/**").hasRole("ADMIN")
                 //.antMatchers("/books/list").permitAll()
                 .anyRequest().authenticated()
@@ -43,7 +44,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
                 .and()
-                .httpBasic();
+                .httpBasic()
+                .and()
+                .csrf()
+                .disable();
     }
 
    /* @Override

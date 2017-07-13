@@ -66,6 +66,15 @@ public class CloudinaryConfig {
         return superUrl[1];
     }
 
+    public String createUrlSuperProfile(String name, int height, String action, int border){
+        String[] url = name.split("/");
+        String[] superUrl =  (cloudinary.url()
+                .transformation(new Transformation().height(height).border(border+"px_solid_black").crop(action))
+                .imageTag(url[url.length-1])).split("'");
+
+        return superUrl[1];
+    }
+
     public String createUrlSuper(String name, int width, int height, String action, String effect){
         String[] url = name.split("/");
         String[] superUrl =  (cloudinary.url()

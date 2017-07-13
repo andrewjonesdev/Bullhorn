@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="www.thymeleaf.org " xmlns:sec="www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bird That Makes Sounds Login</title>
+
+    <th:block th:replace="base2 :: head"></th:block>
+</head>
+<body>
+<th:block th:replace="base2 :: nav"></th:block>
+
+<div class="container">
+    <br/><br/><br/><br/>
+    <div class="starter-template">
+    </div>
+    <br />
+    <br /><br />
+    <h1>Spring Boot file upload example</h1>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="text" name="text" />
+        <input type="file" name="file" />
+        <input type="number" name="fontSize" min="1" max="100" />
+        <input type="number" name="scale" min="1" max="100" />
+        <input type="number" name="x" min="1" max="100" />
+        <input type="number" name="y" min="1" max="100" /><br/><br/>
+        <input type="submit" value="Submit" />
+    </form>
+    <div th:if="${message}">
+        <h2 th:text="${message}"/><br/><br/>
+    </div>
+    <div th:if="${imageurl1} != null">
+        <img th:src="${imageurl1}" />
+        <hr />
+    </div>
+    <div th:if="${imageurl2} != null">
+        <img th:src="${imageurl2}" />
+        <hr />
+    </div>
+    <div th:if="${imageurl3} != null">
+        <img th:src="${imageurl3}" />
+        <hr />
+    </div>
+    <div th:if="${imageurl4} != null">
+        <img th:src="${imageurl4}" />
+        <hr />
+    </div>
+    <div th:if="${imageurl5} != null">
+        <img th:src="${imageurl5}" />
+        <hr />
+    </div>
+    <div th:if="${imageurl6} != null">
+        <img th:src="${imageurl6}" />
+        <hr />
+    </div>
+</div><!-- /.container -->
+
+<th:block th:replace="base2 :: footlinks"></th:block>
+</body>
+</html>
