@@ -1,10 +1,13 @@
 package byaj.models;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Set;
@@ -16,12 +19,13 @@ import java.util.Set;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "post_id")
     //@NotNull
     //@Min(1)
     private int postID;
 
-    @ManyToMany(mappedBy = "likes",fetch = FetchType.LAZY)
-    private Set<User> users;
+    @ManyToMany(mappedBy = "likes")
+    private Collection<User> users;
 
     private String postName;
 
@@ -29,7 +33,9 @@ public class Post {
     @Column(columnDefinition="integer default -1")
     private int postUser;
 
-    @Column(columnDefinition="varchar default http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png")
+    @Lob
+    @Type(type = "text")
+    //@Column(columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png")
     private String picUrl;
 
     private Date postDate=new Date();
@@ -84,11 +90,11 @@ public class Post {
         return format.format(postDate);
     }
 
-    public Set<User> getUsers() {
+    public Collection<User> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<User> users) {
+    public void setUsers(Collection<User> users) {
         this.users = users;
     }
 }

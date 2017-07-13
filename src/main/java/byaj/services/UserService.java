@@ -106,7 +106,7 @@ public class UserService {
             user.setLikes(likedPosts);
         }
         //other user is being likers by this user
-        Set<User> likers=post.getUsers();
+        Collection<User> likers=post.getUsers();
         if(likers.contains(user)) {
             likers.add(user);
             post.setUsers(likers);
@@ -116,7 +116,7 @@ public class UserService {
     }
 
     public void unlikePost(User user, Post post){
-        Set<User> unlike;
+        Collection<User> unlike;
 
         if( post.getUsers().contains(user)){
             unlike=post.getUsers();

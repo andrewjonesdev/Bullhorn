@@ -95,6 +95,7 @@ public class HomeController {
                 userService.saveUser(user);
                 model.addAttribute("message", "User Account Successfully Created");
             }*/
+           user.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg");
             userService.saveUser(user);
             model.addAttribute("message", "User Account Successfully Created");
         }
@@ -116,20 +117,26 @@ public class HomeController {
     }
 
     @PostMapping(path = "/post")
-    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("file") MultipartFile file, Principal principal) {
+    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam(value = "file", required = false) MultipartFile file, Principal principal) {
         if (bindingResult.hasErrors()) {
             System.out.println("post");
             return "redirect:/job";
         }
-        if(!file.isEmpty()){
-            try {
-                Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
-                post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(),100, "scale", 2));
 
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        }
+            if (file.isEmpty()) {
+                post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
+
+            } else {
+                try {
+                    Map uploadResult = cloudc.upload(file.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+                    post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(), 100, "scale", 2));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
 
         post.setPostUser(userRepository.findByUsername(principal.getName()).getId());
         post.setPostAuthor(userRepository.findByUsername(principal.getName()).getUsername());

@@ -2,6 +2,7 @@ package byaj.models;
 
 
 import byaj.models.Role;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
@@ -49,7 +50,9 @@ public class User {
     @Column(name = "user_date")
     private Date userDate=new Date();
 
-    @Column(name="picture_url", columnDefinition="varchar default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
+    @Lob
+    @Type(type = "text")
+    //@Column(name="picture_url", columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
     private String picUrl;
 
     @Column(name = "picture_date")
@@ -60,8 +63,8 @@ public class User {
     @JoinTable(joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Collection<Role> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(joinColumns = @JoinColumn(name = "user_likes"),inverseJoinColumns = @JoinColumn(name = "posts_liked"))
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name="likes",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "post_id"))
     private Collection<Post> likes;
 
     @ManyToMany//(fetch = FetchType.EAGER)
@@ -72,7 +75,7 @@ public class User {
     @JoinTable(name="follow_status", joinColumns = @JoinColumn(name = "followed_id"),inverseJoinColumns = @JoinColumn(name = "following_id"))
     private Collection<User> followed;
 
-    public User(String email, String password, String firstName, String lastName, boolean enabled, String username) {
+    public User(String email, String password, String firstName, String lastName, boolean enabled, String username, String picUrl) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -80,6 +83,7 @@ public class User {
         this.enabled = enabled;
         this.username = username;
         fullName = firstName + " " + lastName;
+        this.picUrl=picUrl;
 
     }
 
