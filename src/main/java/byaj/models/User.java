@@ -55,6 +55,11 @@ public class User {
     //@Column(name="picture_url", columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
     private String picUrl;
 
+    @Lob
+    @Type(type = "text")
+    //@Column(name="picture_url", columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
+    private String picOriginUrl;
+    
     @Column(name = "picture_date")
     private Date picDate=new Date();
 
@@ -75,7 +80,7 @@ public class User {
     @JoinTable(name="follow_status", joinColumns = @JoinColumn(name = "followed_id"),inverseJoinColumns = @JoinColumn(name = "following_id"))
     private Collection<User> followed;
 
-    public User(String email, String password, String firstName, String lastName, boolean enabled, String username, String picUrl) {
+    public User(String email, String password, String firstName, String lastName, boolean enabled, String username, String picUrl, String picOriginUrl) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -84,6 +89,7 @@ public class User {
         this.username = username;
         fullName = firstName + " " + lastName;
         this.picUrl=picUrl;
+        this.picOriginUrl=picOriginUrl;
 
     }
 
@@ -172,6 +178,14 @@ public class User {
 
     public void setPicUrl (String picUrl) {
         this.picUrl = picUrl;
+    }
+
+    public String getPicOriginUrl() {
+        return picOriginUrl;
+    }
+
+    public void setPicOriginUrl (String picOriginUrl) {
+        this.picOriginUrl = picOriginUrl;
     }
 
     public Collection<Role> getRoles() {

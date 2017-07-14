@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
                 .antMatchers("/").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/users").permitAll()
+                .antMatchers("/upload").hasAuthority("ADMIN")
                 //.antMatchers("/books/edit/**").hasRole("ADMIN")
                 //.antMatchers("/books/list").permitAll()
                 .anyRequest().authenticated()

@@ -115,7 +115,7 @@ public class HomeController {
                 userService.saveUser(user);
                 model.addAttribute("message", "User Account Successfully Created");
             }*/
-           user.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg");
+           user.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/profilepic_kos4l4.jpg");
             userService.saveUser(user);
             model.addAttribute("message", "User Account Successfully Created");
         }
@@ -191,6 +191,7 @@ public class HomeController {
         }
         try {
             Map uploadResult = cloudc.upload(fileProfile.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+            userRepository.findByUsername(principal.getName()).setPicOriginUrl(uploadResult.get("url").toString());
             userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlSuperProfile(uploadResult.get("url").toString(), 100, "scale", 2));
             userRepository.findByUsername(principal.getName()).setPicDate();
             userRepository.save(userRepository.findByUsername(principal.getName()));
@@ -216,18 +217,21 @@ public class HomeController {
             if (!filePost.isEmpty()) {
                 try {
                     Map uploadResult = cloudc.upload(filePost.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
+                    post.setPicOriginUrl(uploadResult.get("url").toString());
                     post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(), 100, "scale", 2));
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
+                post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/Empty_xay49d.png");
+                post.setPicOriginUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/Empty_xay49d.png");
             }
         }
         catch(Exception e){
             System.out.println("null file");
             post.setPicUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png");
+            post.setPicOriginUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/v1499897311/Empty_xay49d.png");
         }
 
         post.setPostUser(userRepository.findByUsername(principal.getName()).getId());
@@ -254,6 +258,12 @@ public class HomeController {
             model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()));
             model.addAttribute("follow", new Follow());
             model.addAttribute("like", new Like());
+            ArrayList<User> userCollection= new ArrayList();
+            for(int count = 0; count<postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()).size(); count++){
+                userCollection.add(userRepository.findByUsername(postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue())
+                .get(count).getPostAuthor()));
+            }
+            model.addAttribute("userList", userCollection);
             return "postresults2";
         }
        /* if(search.getSearchType().toLowerCase().equals("company")){
@@ -301,7 +311,7 @@ public class HomeController {
         followRepository.save(follow);
         System.out.println(userRepository.findByUsername(principal.getName()).getUsername());
         System.out.println(userRepository.findByUsername(follow.getFollowValue()).getUsername());
-        return "redirect:/";
+        return "redirect:/myfeed";
     }
 
     //Following Post Mapping
