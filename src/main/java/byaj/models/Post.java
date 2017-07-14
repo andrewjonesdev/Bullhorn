@@ -46,6 +46,11 @@ public class Post {
     //@Column(columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png")
     private String picOriginUrl;
 
+    @Lob
+    @Type(type = "text")
+    //@Column(columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_fill,h_100,w_100/v1499897311/Empty_xay49d.png")
+    private String picDefaultUrl;
+
     private Date postDate=new Date();
 
 
@@ -79,6 +84,14 @@ public class Post {
 
     public void setPicOriginUrl (String picOriginUrl) {
         this.picOriginUrl = picOriginUrl;
+    }
+
+    public String getPicDefaultUrl() {
+        return picDefaultUrl;
+    }
+
+    public void setPicDefaultUrl (String picDefaultUrl) {
+        this.picDefaultUrl = picDefaultUrl;
     }
 
     public String getPostAuthor() {
