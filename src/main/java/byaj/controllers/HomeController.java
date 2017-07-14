@@ -411,9 +411,15 @@ public class HomeController {
     public String viewUsers(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
-        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findAllByOrderByUserDateDesc());
         model.addAttribute("follow", new Follow());
+        if(principal == null) {
+            return "userresults2";
+        }
+        else{
+            model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        }
+
         return "userresults2";
     }
     @PostMapping("/generate/posts")
