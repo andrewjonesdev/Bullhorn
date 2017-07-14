@@ -254,4 +254,13 @@ public class User {
             return false;
         }
     }
+
+    public boolean likesContains(Post post){
+        if(likes.contains(post)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

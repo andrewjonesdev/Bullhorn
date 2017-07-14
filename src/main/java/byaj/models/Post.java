@@ -101,4 +101,12 @@ public class Post {
         this.users = users;
     }
 
+    public boolean usersContains(User user){
+        if(users.contains(user)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }

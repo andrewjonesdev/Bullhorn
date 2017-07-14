@@ -73,7 +73,7 @@ public class UserService {
         }
         //other user is being followed by this user
         Collection<User> followed=otherUser.getFollowed();
-        if(otherUser.followedContains(thisUser)) {
+        if(!otherUser.followedContains(thisUser)) {
             followed.add(thisUser);
             otherUser.setFollowed(followed);
         }
@@ -101,13 +101,13 @@ public class UserService {
     public void likePost(Post post, User user){
         //this user is likedPosts other user
         Collection<Post> likedPosts=user.getLikes();
-        if(!likedPosts.contains(post)) {
+        if(!post.usersContains(user)) {
             likedPosts.add(post);
             user.setLikes(likedPosts);
         }
         //other user is being likers by this user
         Collection<User> likers=post.getUsers();
-        if(likers.contains(user)) {
+        if(!user.likesContains(post)) {
             likers.add(user);
             post.setUsers(likers);
         }
@@ -118,13 +118,13 @@ public class UserService {
     public void unlikePost(Post post, User user){
         Collection<User> unlike;
 
-        if( post.getUsers().contains(user)){
+        if( post.usersContains(user)){
             unlike=post.getUsers();
             unlike.remove(user);
             post.setUsers(unlike);
         }
         Collection<Post> dislikers;
-        if (user.getLikes().contains(post)){
+        if (user.likesContains(post)){
             dislikers=user.getLikes();
             dislikers.remove(post);
             user.setLikes(dislikers);

@@ -68,11 +68,11 @@ public class HomeController {
         model.addAttribute("follow", new Follow());
         model.addAttribute("like", new Like());
         model.addAttribute("posts", postRepository.findAllByOrderByPostDateDesc());
-        Collection<User> userCollection;
+        ArrayList<User> userCollection= new ArrayList();
         for(int count = 0; count<postRepository.findAllByOrderByPostDateDesc().size(); count++){
             userCollection.add(userRepository.findByUsername(postRepository.findAllByOrderByPostDateDesc().get(count).getPostAuthor()));
         }
-        model.addAttribute("userRepo", );
+        model.addAttribute("userList", userCollection);
         if(principal == null) {
             return "postresults2";
         }
@@ -366,6 +366,32 @@ public class HomeController {
         profileBuilder.setProfileBuilderAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         profileBuilderRepository.save(profileBuilder);
         return "post2";
+    }
+
+    @RequestMapping("/myfeed")
+    public String myHome(Model model, Principal principal){
+        model.addAttribute("search", new Search());
+        model.addAttribute("post", new Post());
+        model.addAttribute("follow", new Follow());
+        model.addAttribute("like", new Like());
+
+        ArrayList<User> userCollection= new ArrayList();
+        for(int count = 0; count<postRepository.findAllByOrderByPostDateDesc().size(); count++){
+            userCollection.add(userRepository.findByUsername(postRepository.findAllByOrderByPostDateDesc().get(count).getPostAuthor()));
+        }
+        ArrayList<Post> personalPosts = new ArrayList();
+        ArrayList<User> personalUsers = new ArrayList();
+        for(int count = 0; count<postRepository.findAllByOrderByPostDateDesc().size(); count++){
+            if(userRepository.findByUsername(principal.getName()).followingContains(userCollection.get(count))){
+                personalPosts.add(postRepository.findAllByOrderByPostDateDesc().get(count));
+                personalUsers.add(userCollection.get(count));
+            }
+        }
+        model.addAttribute("posts", personalPosts);
+        model.addAttribute("userList", personalUsers);
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+
+        return "postresults2";
     }
 
 }
