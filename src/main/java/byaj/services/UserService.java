@@ -72,12 +72,12 @@ public class UserService {
             thisUser.setFollowing(following);
         }
         //other user is being followed by this user
-        Collection<User> followed=otherUser.getFollowed();
+       /* Collection<User> followed=otherUser.getFollowed();
         if(!otherUser.followedContains(thisUser)) {
             followed.add(thisUser);
             otherUser.setFollowed(followed);
-        }
-        userRepository.save(otherUser);
+        }*/
+        //userRepository.save(otherUser);
         userRepository.save(thisUser);
     }
     public void unfollowUser(User otherUser, User thisUser){
@@ -88,13 +88,13 @@ public class UserService {
                 unfollowing.remove(otherUser);
                 thisUser.setFollowing(unfollowing);
             }
-        Collection<User> unfollowed;
+       /* Collection<User> unfollowed;
             if (otherUser.followedContains(thisUser)){
                 unfollowed=otherUser.getFollowed();
                 unfollowed.remove(thisUser);
                 otherUser.setFollowed(unfollowed);
-            }
-        userRepository.save(otherUser);
+            }*/
+        //userRepository.save(otherUser);
         userRepository.save(thisUser);
     }
 
