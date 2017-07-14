@@ -77,6 +77,8 @@ public class HomeController {
             return "postresults2";
         }
         else{
+            userRepository.findByUsername(principal.getName()).setUrl("/");
+            userRepository.save(userRepository.findByUsername(principal.getName()));
             model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         }
         return "postresults2";
@@ -131,8 +133,10 @@ public class HomeController {
     }
 
     @GetMapping("/upload")
-    public String uploadForm(Model model){
+    public String uploadForm(Model model, Principal principal){
         model.addAttribute("search", new Search());
+        userRepository.findByUsername(principal.getName()).setUrl("/upload");
+        userRepository.save(userRepository.findByUsername(principal.getName()));
         return "upload2";
     }
     @PostMapping("/upload")
@@ -177,6 +181,8 @@ public class HomeController {
         model.addAttribute("like", new Like());
         model.addAttribute("user", userRepository.findByUsername(principal.getName()));
         model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+        userRepository.findByUsername(principal.getName()).setUrl("/post");
+        userRepository.save(userRepository.findByUsername(principal.getName()));
         return "post2";
     }
     @PostMapping("/profile/picture")
@@ -205,7 +211,8 @@ public class HomeController {
             }
         }
             if(restore==true){
-                url =  userRepository.findByUsername(principal.getName()).getPicDefaultUrl();
+                userRepository.findByUsername(principal.getName()).setPicOriginUrl(userRepository.findByUsername(principal.getName()).getPicDefaultUrl());
+                url =  userRepository.findByUsername(principal.getName()).getPicOriginUrl();
             }
 
             if(((border==false)&&(filter==false))||((border==false)&&(filter==true)&&(effect==null))){
@@ -251,7 +258,7 @@ public class HomeController {
     public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("filePost") MultipartFile filePost,@RequestParam(name="border", required=false) boolean border,@RequestParam(name="filter", required=false) boolean filter,@RequestParam(name="effect", required=false) String effect, Principal principal) {
         if (bindingResult.hasErrors()) {
             System.out.println("post");
-            return "redirect:/job";
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
         }
         post.setPicDefaultUrl("http://res.cloudinary.com/andrewjonesdev/image/upload/Empty_xay49d.png");
         try {
@@ -305,15 +312,77 @@ public class HomeController {
         post.setPostUser(userRepository.findByUsername(principal.getName()).getId());
         post.setPostAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         postRepository.save(post);
-        return "redirect:/post";
+        return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
 
     }
+    @GetMapping("/search")
+    public String searchRedirect(Principal principal, Model model){
+        if(!userRepository.findByUsername(principal.getName()).getUrl().equals("/search")){
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
+        }
+    Search search = searchRepository.findBySearchAuthorOrderBySearchDateDesc(principal.getName());
+        model.addAttribute("search", new Search());
+        model.addAttribute("profileBuilder", new ProfileBuilder());
+        model.addAttribute("postBuilder", new PostBuilder());
+        model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
 
+        if(search.getSearchType().toLowerCase().equals("posts")) {
+            model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()));
+            model.addAttribute("follow", new Follow());
+            model.addAttribute("like", new Like());
+            ArrayList<User> userCollection = new ArrayList();
+            for (int count = 0; count < postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()).size(); count++) {
+                userCollection.add(userRepository.findByUsername(postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue())
+                        .get(count).getPostAuthor()));
+            }
+            model.addAttribute("userList", userCollection);
+
+            userRepository.findByUsername(principal.getName()).setUrl("/search");
+            userRepository.save(userRepository.findByUsername(principal.getName()));
+
+            return "postresults2";
+        }
+        if(search.getSearchType().toLowerCase().equals("users")){
+            model.addAttribute("search", new Search());
+            model.addAttribute("profileBuilder", new ProfileBuilder());
+            model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+            model.addAttribute("users", userRepository.findAllByUsernameOrderByUserDateDesc(search.getSearchValue()));
+            model.addAttribute("follow", new Follow());
+            userRepository.findByUsername(principal.getName()).setUrl("/followers");
+            userRepository.save(userRepository.findByUsername(principal.getName()));
+            return "userresults2";
+        }
+             /* if(search.getSearchType().toLowerCase().equals("company")){
+            ArrayList<User> result = new ArrayList();
+            List<Work> comp = workRepository.findAllByWorkEmployerOrderByWorkResAsc(search.getSearchValue());
+            for (int count = 0; count< comp.size(); count++){
+                result.add(userRepository.findById(comp.get(count).getWorkRes()));
+            }
+            model.addAttribute("results", result);
+            return "searchResults2";
+        }
+        if(search.getSearchType().toLowerCase().equals("school")){
+            ArrayList<User> result = new ArrayList();
+            List<Education> comp = educationRepository.findAllByEduSchoolOrderByEduResAsc(search.getSearchValue());
+            for (int count = 0; count< comp.size(); count++){
+                result.add(userRepository.findById(comp.get(count).getEduRes()));
+            }
+            model.addAttribute("results", result);
+            return "searchResults2";
+        }
+        if(search.getSearchType().toLowerCase().equals("jobtitle")){
+            ArrayList<User> job = new ArrayList();
+            //List<Job> comp = jobRepository.findAllByJobTitleOrderByJobStartYearDesc(search.getSearchValue());
+            model.addAttribute("jobs", jobRepository.findAllByJobTitleOrderByJobStartYearDescJobStartMonthDesc(search.getSearchValue()));
+            return "jobResults2";
+        }*/
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
+    }
     @PostMapping("/search")
-    public String searchForResumes(@Valid Search search, BindingResult bindingResult, Principal principal, Model model){
+    public String searchBar(@Valid Search search, BindingResult bindingResult, Principal principal, Model model){
         if (bindingResult.hasErrors()) {
             System.out.println("search");
-            return "redirect:/";
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
         }
         model.addAttribute("search", new Search());
         model.addAttribute("profileBuilder", new ProfileBuilder());
@@ -322,7 +391,7 @@ public class HomeController {
         search.setSearchUser(userRepository.findByUsername(principal.getName()).getId());
         search.setSearchAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         searchRepository.save(search);
-        if(search.getSearchType().toLowerCase().equals("username")){
+        if(search.getSearchType().toLowerCase().equals("posts")){
             model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(search.getSearchValue()));
             model.addAttribute("follow", new Follow());
             model.addAttribute("like", new Like());
@@ -332,7 +401,21 @@ public class HomeController {
                 .get(count).getPostAuthor()));
             }
             model.addAttribute("userList", userCollection);
+
+                userRepository.findByUsername(principal.getName()).setUrl("/search");
+                userRepository.save(userRepository.findByUsername(principal.getName()));
+
             return "postresults2";
+        }
+        if(search.getSearchType().toLowerCase().equals("users")){
+            model.addAttribute("search", new Search());
+            model.addAttribute("profileBuilder", new ProfileBuilder());
+            model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
+            model.addAttribute("users", userRepository.findAllByUsernameOrderByUserDateDesc(search.getSearchValue()));
+            model.addAttribute("follow", new Follow());
+            userRepository.findByUsername(principal.getName()).setUrl("/followers");
+            userRepository.save(userRepository.findByUsername(principal.getName()));
+            return "userresults2";
         }
        /* if(search.getSearchType().toLowerCase().equals("company")){
             ArrayList<User> result = new ArrayList();
@@ -358,7 +441,7 @@ public class HomeController {
             model.addAttribute("jobs", jobRepository.findAllByJobTitleOrderByJobStartYearDescJobStartMonthDesc(search.getSearchValue()));
             return "jobResults2";
         }*/
-        return "redirect:/";
+        return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
     }
 
     //Follow Post Mapping
@@ -366,7 +449,7 @@ public class HomeController {
     @PostMapping("/follow")
     public String changeFollowStatus(@Valid Follow follow, BindingResult bindingResult, Principal principal, Model model){
         if(bindingResult.hasErrors()){
-            return "redirect:/";
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
         }
         if(follow.getFollowType().toLowerCase().equals("follow")){
             userService.followUser(userRepository.findByUsername(follow.getFollowValue()), userRepository.findByUsername(principal.getName()));
@@ -379,7 +462,7 @@ public class HomeController {
         followRepository.save(follow);
         System.out.println(userRepository.findByUsername(principal.getName()).getUsername());
         System.out.println(userRepository.findByUsername(follow.getFollowValue()).getUsername());
-        return "redirect:/myfeed";
+        return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
     }
 
     //Following Post Mapping
@@ -391,6 +474,8 @@ public class HomeController {
         model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findByUsername(principal.getName()).getFollowing());
         model.addAttribute("follow", new Follow());
+        userRepository.findByUsername(principal.getName()).setUrl("/following");
+        userRepository.save(userRepository.findByUsername(principal.getName()));
         return "userresults2";
     }
     @GetMapping("/followers")
@@ -400,13 +485,15 @@ public class HomeController {
         model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         model.addAttribute("users", userRepository.findByUsername(principal.getName()).getFollowed());
         model.addAttribute("follow", new Follow());
+        userRepository.findByUsername(principal.getName()).setUrl("/followers");
+        userRepository.save(userRepository.findByUsername(principal.getName()));
         return "userresults2";
     }
 
     @PostMapping("/like")
     public String changeLikeStatus(@Valid Like like, BindingResult bindingResult, Principal principal, Model model){
         if(bindingResult.hasErrors()){
-            return "redirect:/";
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
         }
         if(like.getLikeType().toLowerCase().equals("like")){
             userService.likePost(postRepository.findByPostID(Integer.parseInt(like.getLikeValue())), userRepository.findByUsername(principal.getName()));
@@ -417,7 +504,7 @@ public class HomeController {
         like.setLikeUser(userRepository.findByUsername(principal.getName()).getId());
         like.setLikeAuthor(userRepository.findByUsername(principal.getName()).getUsername());
         likeRepository.save(like);
-        return "redirect:/";
+        return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
     }
     
     @GetMapping("/users")
@@ -430,15 +517,20 @@ public class HomeController {
             return "userresults2";
         }
         else{
+            userRepository.findByUsername(principal.getName()).setUrl("/users");
+            userRepository.save(userRepository.findByUsername(principal.getName()));
             model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
         }
-
         return "userresults2";
     }
     @PostMapping("/generate/posts")
     public String generatePosts(@Valid ProfileBuilder profileBuilder, BindingResult bindingResult, Model model, Principal principal){
         if(bindingResult.hasErrors()){
-            return "redirect:/";
+            return "redirect:"+userRepository.findByUsername(principal.getName()).getUrl();
+        }
+        if(userRepository.findByUsername(profileBuilder.getProfileBuilderValue()).getUsername().equals(principal.getName()))
+        {
+            return "redirect:/post";
         }
         model.addAttribute("search", new Search());
         model.addAttribute("posts", postRepository.findAllByPostAuthorOrderByPostDateDesc(profileBuilder.getProfileBuilderValue()));
@@ -452,7 +544,7 @@ public class HomeController {
         return "post2";
     }
 
-    @RequestMapping("/myfeed")
+    @GetMapping("/myfeed")
     public String myHome(Model model, Principal principal){
         model.addAttribute("search", new Search());
         model.addAttribute("post", new Post());
@@ -474,7 +566,8 @@ public class HomeController {
         model.addAttribute("posts", personalPosts);
         model.addAttribute("userList", personalUsers);
         model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
-
+        userRepository.findByUsername(principal.getName()).setUrl("/myfeed");
+        userRepository.save(userRepository.findByUsername(principal.getName()));
         return "postresults2";
     }
 

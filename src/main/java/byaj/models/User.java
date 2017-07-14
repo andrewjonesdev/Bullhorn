@@ -47,6 +47,9 @@ public class User {
     @Column(name = "enabled")
     private boolean enabled = true;
 
+    @Column(name = "recursive_switch", columnDefinition="boolean default true")
+    private boolean recursiveSwitch = true;
+
     @Column(name = "user_date")
     private Date userDate=new Date();
 
@@ -64,6 +67,11 @@ public class User {
     @Type(type = "text")
     //@Column(name="picture_url", columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
     private String picDefaultUrl;
+
+    @Lob
+    @Type(type = "text")
+    //@Column(name="picture_url", columnDefinition="blob default http://res.cloudinary.com/andrewjonesdev/image/upload/c_scale,h_100/v1499894133/profilepic_kos4l4.jpg")
+    private String url;
     
     @Column(name = "picture_date")
     private Date picDate=new Date();
@@ -84,7 +92,7 @@ public class User {
     @ManyToMany//(fetch = FetchType.EAGER)
     @JoinTable(name="follow_status", joinColumns = @JoinColumn(name = "followed_id"),inverseJoinColumns = @JoinColumn(name = "following_id"))
     private Collection<User> followed;
-
+    
     public User(String email, String password, String firstName, String lastName, boolean enabled, String username, String picUrl, String picOriginUrl, String picDefaultUrl) {
         this.email = email;
         this.password = password;
@@ -96,6 +104,7 @@ public class User {
         this.picUrl=picUrl;
         this.picOriginUrl=picOriginUrl;
         this.picDefaultUrl=picDefaultUrl;
+        recursiveSwitch=true;
 
     }
 
@@ -202,6 +211,14 @@ public class User {
         this.picDefaultUrl = picDefaultUrl;
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl (String url) {
+        this.url = url;
+    }
+
     public Collection<Role> getRoles() {
         return roles;
     }
@@ -290,5 +307,15 @@ public class User {
         else{
             return false;
         }
+    }
+    public void recursiveSwitchToggle(){
+        recursiveSwitch=!recursiveSwitch;
+    }
+    public boolean isRecursiveSwitch() {
+        return recursiveSwitch;
+    }
+
+    public void setRecursiveSwitch(boolean recursiveSwitch) {
+        this.recursiveSwitch = recursiveSwitch;
     }
 }

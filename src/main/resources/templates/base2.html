@@ -19,8 +19,8 @@
     </th:block>
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-top" th:fragment="nav">
-    <div class="container">
+<nav class="navbar navbar-inverse navbar-fixed-top" th:fragment="nav" style="width: 100% !important;">
+    <div class="container" style="width: 100% !important;">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                 <span class="sr-only">Toggle navigation</span>
@@ -30,8 +30,9 @@
             </button>
             <a class="navbar-brand" href="/">A Bird That Makes Sounds</a>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
+        <div id="navbar" class="collapse navbar-collapse" style="width: 100% !important;">
+            <ul class="nav navbar-nav" style="width: 100% !important;">
+                <li sec:authorize="isAuthenticated()"><a href="#">Welcome, <span sec:authentication="principal.authorities">ROLE_USER, ROLE_ADMIN</span> <span sec:authentication="name">...</span></a></li>
                 <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/myfeed">Personal Feed</a></li>
                 <li sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')"><a href="/post">Post</a></li>
                <!-- <li sec:authorize="hasAnyAuthority('EMPLOYER', 'ADMIN')"><a href="/job">Add Job</a></li>
@@ -44,19 +45,45 @@
                 <li sec:authorize="isAnonymous()"><a href="/register">Register Today</a></li>
                 <li sec:authorize="isAnonymous()"><a href="/login">Login</a></li>
                 <li sec:authorize="isAuthenticated()"><a href="/logout">Logout</a></li>
-            </ul>
-            <form class="navbar-form navbar-left" sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')" th:action="@{/search}" th:object="${search}" method="post">
-                <a href="#"><div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search Usernames" th:field="*{searchValue}"/>
-                </div></a>
-                <!--<div class="radio">-->
-                    <a href="#"><label>
-                        <input type="hidden" th:name="searchType" th:id="searchType" value="username" aria-label="..."/>
+                <form sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')" class="navbar-form navbar-nav" th:action="@{/search}" th:object="${search}" method="post">
+                    <li><input type="text" class="form-control" placeholder="Search Usernames" th:field="*{searchValue}"/></li>
+                    <li><a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><label class="radio-inline">
+               <input type="radio" name="radio" id="radio1" value="posts" aria-label="..." th:field="*{searchType}"/>
+               Posts
+           </label>
+           <label class="radio-inline">
+               <input type="radio" name="radio" id="radio2" value="users" aria-label="..." th:field="*{searchType}"/>
+               Users
+           </label></li>
+                        <li role="separator" class="divider"></li>
+               <li><button type="submit" class="btn btn-default">Search</button></li>
 
+               </ul></li>
+
+       </form>
+   </ul>
+   <!-- <form class="navbar-form navbar-left" sec:authorize="hasAnyAuthority('USER', 'EMPLOYER', 'ADMIN')" th:action="@{/search}" th:object="${search}" method="post">
+      <a href="#"><div class="form-group">
+          <input type="text" class="form-control" placeholder="Search Usernames" th:field="*{searchValue}"/>
+      </div></a>-->
+               <!--<div class="radio">-->
+
+                <!--<label>Search Type:
+                    <select th:id="searchType" th:name="searchType" class="form-control">
+                        <option value="posts">Posts</option>
+                        <option value="users" >Users</option>
+
+                    </select></label>-->
+
+                <!--<a href="#"><label>
+                        <input type="radio" name="radio" id="radio1" value="posts" aria-label="..." th:field="*{searchType}"/>
+                        Posts
                     </label></a>
-                   <!-- <a sec:authorize="hasAnyAuthority('EMPLOYER', 'ADMIN')" href="#"><label>
-                        <input type="radio" name="radio" id="radio2" value="company" aria-label="Company" th:field="*{searchType}"/>
-                        Company
+                    <a href="#"><label>
+                        <input type="radio" name="radio" id="radio2" value="users" aria-label="..." th:field="*{searchType}"/>
+                        Users
                     </label></a>
                     <a sec:authorize="hasAnyAuthority('EMPLOYER', 'ADMIN')" href="#"> <label>
                         <input type="radio" name="radio" id="radio3" value="school" aria-label="School" th:field="*{searchType}"/>
@@ -67,12 +94,12 @@
                         Job
                     </label></a>-->
                 <!--</div>-->
-                <button type="submit" class="btn btn-default">Search</button>
-            </form>
+                <!--<button type="submit" class="btn btn-default">Search</button>
+            </form>-->
             <!--<ul class="nav navbar-nav navbar-right">-->
-            <ul class="nav navbar-nav">
-                <li class="icon-bar" sec:authorize="isAuthenticated()"><a href="#">Welcome, <span sec:authentication="principal.authorities">ROLE_USER, ROLE_ADMIN</span> <span sec:authentication="name">...</span></a></li>
-            </ul>
+
+
+
                 <!--</ul>-->
         </div><!--/.nav-collapse -->
     </div>

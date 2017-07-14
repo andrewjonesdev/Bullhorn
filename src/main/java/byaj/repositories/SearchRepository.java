@@ -11,4 +11,5 @@ import java.util.List;
 
 public interface SearchRepository extends CrudRepository<Search, Integer> {
     public List<Search> findAllBySearchUser(int num);
+    public Search findBySearchAuthorOrderBySearchDateDesc(String author);
 }
