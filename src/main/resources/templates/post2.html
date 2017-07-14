@@ -27,23 +27,21 @@
             <label for="title">Change Profile Picture</label>
             <input type="file" name="fileProfile" />
             <label class="checkbox-inline">
-                <input type="checkbox" name="border" id="border" value="true"> Border
+                <input type="checkbox" name="border" /> Border
             </label>
             <label class="checkbox-inline">
-                <input type="checkbox" name="filer" id="filter" value="true"> Filter
-            </label>
-            <label class="checkbox-inline">
-                <input type="checkbox" id="inlineCheckbox3" value="option3"> 3
+                <input type="checkbox" name="filter" /> Filter
             </label>
 
+
             <label class="radio-inline">
-                <input type="radio" name="sepia" id="sepia" value="sepia"> Sepia
+                <input type="radio" name="effect" value="sepia"/> Sepia
             </label>
             <label class="radio-inline">
-                <input type="radio" name="grayscale" id="grayscale" value="grayscale"> Grayscale
+                <input type="radio" name="effect" value="grayscale"/> Grayscale
             </label>
             <label class="radio-inline">
-                <input type="radio" name="cartoonify" id="cartoonify" value=cartoonify"> Cartoonify
+                <input type="radio" name="effect" value="cartoonify"/> Cartoonify
             </label>
         </div>
         <button type="submit" class="btn btn-default">Change Profile Pic</button>
@@ -91,6 +89,23 @@
         <div class="form-group">
             <label for="title">Image</label>
         <input type="file" name="filePost" />
+            <label class="checkbox-inline">
+                <input type="checkbox" name="border" /> Border
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="filter" /> Filter
+            </label>
+
+
+            <label class="radio-inline">
+                <input type="radio" name="effect" value="sepia"/> Sepia
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="effect" value="grayscale"/> Grayscale
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="effect" value="cartoonify"/> Cartoonify
+            </label>
         </div>
         <button type="submit" class="btn btn-default">Post</button>
     </form>

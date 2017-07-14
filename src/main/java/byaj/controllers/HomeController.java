@@ -177,7 +177,7 @@ public class HomeController {
         return "post2";
     }
     @PostMapping("/profile/picture")
-    public String singleImageUpload(@RequestParam("fileProfile") MultipartFile fileProfile, Model model, Principal principal, RedirectAttributes redirectAttributes){
+    public String singleImageUpload(@RequestParam("fileProfile") MultipartFile fileProfile,@RequestParam(name="border", required=false) boolean border,@RequestParam(name="filter", required=false) boolean filter,@RequestParam(name="effect", required=false) String effect, Model model, Principal principal, RedirectAttributes redirectAttributes){
         model.addAttribute("search", new Search());
         if (fileProfile.isEmpty()){
             model.addAttribute("message","Please select a file to upload");
@@ -189,10 +189,38 @@ public class HomeController {
             model.addAttribute("userPrincipal", userRepository.findByUsername(principal.getName()));
             return "post2";
         }
+
         try {
             Map uploadResult = cloudc.upload(fileProfile.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
             userRepository.findByUsername(principal.getName()).setPicOriginUrl(uploadResult.get("url").toString());
-            userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlSuperProfile(uploadResult.get("url").toString(), 100, "scale", 2));
+            if((border==false)&&(filter==false)){
+                userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfilePlain(uploadResult.get("url").toString(), 100, "scale"));
+            }
+            else if((border==true)&&(filter==false)) {
+                userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileBorder(uploadResult.get("url").toString(), 100, "scale", 2));
+            }
+            else if((border==false)&&(filter==true)){
+                if (effect.toLowerCase().equals("sepia")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "sepia"));
+                }
+                else if (effect.toLowerCase().equals("grayscale")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "grayscale"));
+                }
+                else if (effect.toLowerCase().equals("cartoonify")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "cartoonify:20:60"));
+                }
+            }
+            else if((border==true)&&(filter==true)){
+                if (effect.toLowerCase().equals("sepia")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"sepia"));
+                }
+                else if (effect.toLowerCase().equals("grayscale")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"grayscale"));
+                }
+                else if (effect.toLowerCase().equals("cartoonify")){
+                    userRepository.findByUsername(principal.getName()).setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"cartoonify:20:60"));
+                }
+            }
             userRepository.findByUsername(principal.getName()).setPicDate();
             userRepository.save(userRepository.findByUsername(principal.getName()));
         } catch (IOException e) {
@@ -208,7 +236,7 @@ public class HomeController {
         return "post2";
 }
     @PostMapping(path = "/post")
-    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("filePost") MultipartFile filePost, Principal principal) {
+    public String processPost(@Valid Post post, BindingResult bindingResult, @RequestParam("filePost") MultipartFile filePost,@RequestParam(name="border", required=false) boolean border,@RequestParam(name="filter", required=false) boolean filter,@RequestParam(name="effect", required=false) String effect, Principal principal) {
         if (bindingResult.hasErrors()) {
             System.out.println("post");
             return "redirect:/job";
@@ -218,7 +246,34 @@ public class HomeController {
                 try {
                     Map uploadResult = cloudc.upload(filePost.getBytes(), ObjectUtils.asMap("resourcetype", "auto"));
                     post.setPicOriginUrl(uploadResult.get("url").toString());
-                    post.setPicUrl(cloudc.createUrlSuperPost(uploadResult.get("url").toString(), 100, "scale", 2));
+                    if((border==false)&&(filter==false)){
+                        post.setPicUrl(cloudc.createUrlProfilePlain(uploadResult.get("url").toString(), 100, "scale"));
+                    }
+                    else if((border==true)&&(filter==false)) {
+                        post.setPicUrl(cloudc.createUrlProfileBorder(uploadResult.get("url").toString(), 100, "scale", 2));
+                    }
+                    else if((border==false)&&(filter==true)){
+                        if (effect.toLowerCase().equals("sepia")){
+                            post.setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "sepia"));
+                        }
+                        else if (effect.toLowerCase().equals("grayscale")){
+                            post.setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "grayscale"));
+                        }
+                        else if (effect.toLowerCase().equals("cartoonify")){
+                            post.setPicUrl(cloudc.createUrlProfileEffect(uploadResult.get("url").toString(), 100, "scale", "cartoonify:20:60"));
+                        }
+                    }
+                    else if((border==true)&&(filter==true)){
+                        if (effect.toLowerCase().equals("sepia")){
+                            post.setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"sepia"));
+                        }
+                        else if (effect.toLowerCase().equals("grayscale")){
+                            post.setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"grayscale"));
+                        }
+                        else if (effect.toLowerCase().equals("cartoonify")){
+                            post.setPicUrl(cloudc.createUrlProfileBorderEffect(uploadResult.get("url").toString(), 100, "scale", 2,"cartoonify:20:60"));
+                        }
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();

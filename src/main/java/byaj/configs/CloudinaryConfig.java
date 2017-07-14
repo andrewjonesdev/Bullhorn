@@ -65,11 +65,34 @@ public class CloudinaryConfig {
 
         return superUrl[1];
     }
+    public String createUrlProfilePlain(String name, int height, String action){
+        String[] url = name.split("/");
+        String[] superUrl =  (cloudinary.url()
+                .transformation(new Transformation().height(height).crop(action))
+                .imageTag(url[url.length-1])).split("'");
 
-    public String createUrlSuperProfile(String name, int height, String action, int border){
+        return superUrl[1];
+    }
+    public String createUrlProfileBorder(String name, int height, String action, int border){
         String[] url = name.split("/");
         String[] superUrl =  (cloudinary.url()
                 .transformation(new Transformation().height(height).border(border+"px_solid_black").crop(action))
+                .imageTag(url[url.length-1])).split("'");
+
+        return superUrl[1];
+    }
+    public String createUrlProfileEffect(String name, int height, String action, String effect){
+        String[] url = name.split("/");
+        String[] superUrl =  (cloudinary.url()
+                .transformation(new Transformation().height(height).effect(effect).crop(action))
+                .imageTag(url[url.length-1])).split("'");
+
+        return superUrl[1];
+    }
+    public String createUrlProfileBorderEffect(String name, int height, String action, int border, String effect){
+        String[] url = name.split("/");
+        String[] superUrl =  (cloudinary.url()
+                .transformation(new Transformation().height(height).border(border+"px_solid_black").crop(action).effect(effect))
                 .imageTag(url[url.length-1])).split("'");
 
         return superUrl[1];
